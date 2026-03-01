@@ -7,6 +7,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-03-01
+
 ### Changed
 
 - `remnote_read_note` now accepts `includeContent: "structured"` in MCP input validation and tool schemas, aligning
@@ -19,12 +21,6 @@ Versioning](https://semver.org/spec/v2.0.0.html).
   hardening logger tests against async transport timing races.
 - Added/updated unit and integration coverage for `remnote_read_note` structured mode schema validation and request
   pass-through.
-
-### Documentation
-
-- Rewrote `AGENTS.md` into a low-redundancy repo map and aligned it to the shared cross-repo section template,
-  including the current 7-tool surface, `search_by_tag` contract, version-warning handshake flow, and explicit
-  companion-repo contract navigation.
 
 ## [0.6.0] - 2026-02-25
 
