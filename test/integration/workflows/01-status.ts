@@ -10,7 +10,7 @@ import type { WorkflowContext, WorkflowResult, SharedState, StepResult } from '.
 
 export async function statusWorkflow(
   ctx: WorkflowContext,
-  _state: SharedState
+  state: SharedState
 ): Promise<WorkflowResult> {
   const steps: StepResult[] = [];
 
@@ -57,7 +57,39 @@ export async function statusWorkflow(
     }
   }
 
-  // Step 3: Fail fast on bridge/server version mismatch
+  // Step 3: write/replace gate flags are present
+  {
+    const start = Date.now();
+    try {
+      const result = await ctx.client.callTool('remnote_status');
+      assertHasField(result, 'acceptWriteOperations', 'status response');
+      assertHasField(result, 'acceptReplaceOperation', 'status response');
+      assertTruthy(
+        typeof result.acceptWriteOperations === 'boolean',
+        'acceptWriteOperations should be a boolean'
+      );
+      assertTruthy(
+        typeof result.acceptReplaceOperation === 'boolean',
+        'acceptReplaceOperation should be a boolean'
+      );
+      state.acceptWriteOperations = result.acceptWriteOperations as boolean;
+      state.acceptReplaceOperation = result.acceptReplaceOperation as boolean;
+      steps.push({
+        label: 'Write/replace gate flags are present',
+        passed: true,
+        durationMs: Date.now() - start,
+      });
+    } catch (e) {
+      steps.push({
+        label: 'Write/replace gate flags are present',
+        passed: false,
+        durationMs: Date.now() - start,
+        error: (e as Error).message,
+      });
+    }
+  }
+
+  // Step 4: Fail fast on bridge/server version mismatch
   {
     const start = Date.now();
     try {

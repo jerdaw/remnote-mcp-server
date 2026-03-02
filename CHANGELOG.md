@@ -7,6 +7,18 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added `replaceContent` support for `remnote_update_note` in MCP input validation and tool schemas.
+- Added schema-level validation that rejects `appendContent` + `replaceContent` in one update request.
+- Added/updated unit and integration coverage for replace pass-through, append/replace conflict validation, and
+  replace-gate behavior.
+
+### Changed
+
+- Updated tool reference docs for `remnote_update_note` to document direct-child replace semantics, empty-string clear
+  behavior, and bridge write/replace policy gates.
+
 ## [0.7.0] - 2026-03-01
 
 ### Changed

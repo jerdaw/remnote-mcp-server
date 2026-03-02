@@ -37,6 +37,11 @@ export const validUpdateNoteInput = {
   removeTags: ['oldtag'],
 };
 
+export const validUpdateReplaceInput = {
+  remId: 'rem-id-456',
+  replaceContent: 'Replacement content',
+};
+
 export const validAppendJournalInput = {
   content: 'Journal entry',
   timestamp: false,

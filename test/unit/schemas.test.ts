@@ -194,11 +194,12 @@ describe('UpdateNoteSchema', () => {
     expect(result.remId).toBe('rem-456');
     expect(result.title).toBeUndefined();
     expect(result.appendContent).toBeUndefined();
+    expect(result.replaceContent).toBeUndefined();
     expect(result.addTags).toBeUndefined();
     expect(result.removeTags).toBeUndefined();
   });
 
-  it('should validate with all fields', () => {
+  it('should validate append-based update fields', () => {
     const input = {
       remId: 'rem-456',
       title: 'New Title',
@@ -208,6 +209,25 @@ describe('UpdateNoteSchema', () => {
     };
     const result = UpdateNoteSchema.parse(input);
     expect(result).toEqual(input);
+  });
+
+  it('should validate replaceContent updates', () => {
+    const input = {
+      remId: 'rem-456',
+      replaceContent: 'Replacement body',
+    };
+    const result = UpdateNoteSchema.parse(input);
+    expect(result).toEqual(input);
+  });
+
+  it('should reject appendContent and replaceContent together', () => {
+    expect(() =>
+      UpdateNoteSchema.parse({
+        remId: 'rem-456',
+        appendContent: 'Append',
+        replaceContent: 'Replace',
+      })
+    ).toThrow('appendContent and replaceContent cannot be used together');
   });
 
   it('should reject missing remId', () => {

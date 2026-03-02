@@ -96,13 +96,22 @@ export const ReadNoteSchema = z.object({
     .describe('Maximum character length for rendered content'),
 });
 
-export const UpdateNoteSchema = z.object({
-  remId: z.string().describe('The Rem ID to update'),
-  title: z.string().optional().describe('New title'),
-  appendContent: z.string().optional().describe('Content to append as children'),
-  addTags: z.array(z.string()).optional().describe('Tags to add'),
-  removeTags: z.array(z.string()).optional().describe('Tags to remove'),
-});
+export const UpdateNoteSchema = z
+  .object({
+    remId: z.string().describe('The Rem ID to update'),
+    title: z.string().optional().describe('New title'),
+    appendContent: z.string().optional().describe('Content to append as children'),
+    replaceContent: z
+      .string()
+      .optional()
+      .describe('Content to replace direct children (empty string clears children)'),
+    addTags: z.array(z.string()).optional().describe('Tags to add'),
+    removeTags: z.array(z.string()).optional().describe('Tags to remove'),
+  })
+  .refine((value) => !(value.appendContent !== undefined && value.replaceContent !== undefined), {
+    message: 'appendContent and replaceContent cannot be used together',
+    path: ['replaceContent'],
+  });
 
 export const AppendJournalSchema = z.object({
   content: z.string().describe("Content to append to today's daily document"),

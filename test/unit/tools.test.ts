@@ -22,6 +22,7 @@ import {
   validSearchByTagInput,
   validReadNoteInput,
   validUpdateNoteInput,
+  validUpdateReplaceInput,
   validAppendJournalInput,
   sampleNoteResult,
   sampleSearchResults,
@@ -143,6 +144,11 @@ describe('Tool Definitions', () => {
 
   it('should have required remId field for UPDATE_NOTE_TOOL', () => {
     expect(UPDATE_NOTE_TOOL.inputSchema.required).toContain('remId');
+  });
+
+  it('should advertise replaceContent in UPDATE_NOTE_TOOL input schema', () => {
+    const properties = UPDATE_NOTE_TOOL.inputSchema.properties as Record<string, unknown>;
+    expect(properties.replaceContent).toBeDefined();
   });
 
   it('should have correct name for APPEND_JOURNAL_TOOL', () => {
@@ -443,6 +449,32 @@ describe('Tool Handlers - update_note', () => {
     });
 
     expect(mockWsServer.sendRequest).toHaveBeenCalledWith('update_note', { remId: 'rem-456' });
+  });
+
+  it('should pass through replaceContent updates', async () => {
+    await mockServer.callHandler(CallToolRequestSchema, {
+      params: { name: 'remnote_update_note', arguments: validUpdateReplaceInput },
+    });
+
+    expect(mockWsServer.sendRequest).toHaveBeenCalledWith('update_note', validUpdateReplaceInput);
+  });
+
+  it('should reject update requests that include both appendContent and replaceContent', async () => {
+    const result = (await mockServer.callHandler(CallToolRequestSchema, {
+      params: {
+        name: 'remnote_update_note',
+        arguments: {
+          remId: 'rem-456',
+          appendContent: 'append',
+          replaceContent: 'replace',
+        },
+      },
+    })) as { isError: boolean; content: { text: string }[] };
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain(
+      'appendContent and replaceContent cannot be used together'
+    );
   });
 });
 

@@ -47,6 +47,8 @@ export async function readUpdateWorkflow(
     };
   }
 
+  const acceptReplaceOperation = state.acceptReplaceOperation ?? false;
+
   // Step 1: Read simple note
   {
     const start = Date.now();
@@ -198,7 +200,92 @@ export async function readUpdateWorkflow(
     }
   }
 
-  // Step 5: Add tag
+  // Step 5: Replace content (or validate gate rejection)
+  {
+    const start = Date.now();
+    try {
+      if (acceptReplaceOperation) {
+        const replaceBody = `[MCP-TEST] Replaced via integration test ${ctx.runId}`;
+        const result = await ctx.client.callTool('remnote_update_note', {
+          remId: state.noteAId,
+          replaceContent: replaceBody,
+        });
+        assertTruthy(result.success, 'replace content should succeed when enabled');
+
+        const reread = await ctx.client.callTool('remnote_read_note', {
+          remId: state.noteAId,
+          depth: 2,
+          includeContent: 'markdown',
+        });
+        assertTruthy(typeof reread.content === 'string', 're-read content should be string');
+        assertContains(
+          reread.content as string,
+          replaceBody,
+          're-read content should include replaced body'
+        );
+        steps.push({ label: 'Replace content', passed: true, durationMs: Date.now() - start });
+      } else {
+        const errorText = await ctx.client.callToolExpectError('remnote_update_note', {
+          remId: state.noteAId,
+          replaceContent: 'Should be blocked',
+        });
+        assertContains(
+          errorText,
+          'Replace operation is disabled',
+          'replace should be rejected when disabled'
+        );
+        steps.push({
+          label: 'Replace content blocked by gate',
+          passed: true,
+          durationMs: Date.now() - start,
+        });
+      }
+    } catch (e) {
+      steps.push({
+        label: acceptReplaceOperation ? 'Replace content' : 'Replace content blocked by gate',
+        passed: false,
+        durationMs: Date.now() - start,
+        error: (e as Error).message,
+      });
+    }
+  }
+
+  // Step 6: Replace with empty string clears direct children (when enabled)
+  if (acceptReplaceOperation) {
+    const start = Date.now();
+    try {
+      const result = await ctx.client.callTool('remnote_update_note', {
+        remId: state.noteAId,
+        replaceContent: '',
+      });
+      assertTruthy(result.success, 'empty replace should succeed');
+
+      const reread = await ctx.client.callTool('remnote_read_note', {
+        remId: state.noteAId,
+        depth: 2,
+        includeContent: 'markdown',
+      });
+      assertEqual(
+        reread.content as string,
+        '',
+        'empty replace should clear direct child markdown content'
+      );
+      steps.push({
+        label: 'Empty replace clears direct children',
+        passed: true,
+        durationMs: Date.now() - start,
+      });
+    } catch (e) {
+      steps.push({
+        label: 'Empty replace clears direct children',
+        passed: false,
+        durationMs: Date.now() - start,
+        error: (e as Error).message,
+      });
+    }
+  }
+
+  // Step 7: Add tag
   {
     const start = Date.now();
     try {
@@ -218,7 +305,7 @@ export async function readUpdateWorkflow(
     }
   }
 
-  // Step 6: Remove tag
+  // Step 8: Remove tag
   {
     const start = Date.now();
     try {
@@ -238,7 +325,7 @@ export async function readUpdateWorkflow(
     }
   }
 
-  // Step 7: Re-read verifies changes
+  // Step 9: Re-read verifies changes
   {
     const start = Date.now();
     try {

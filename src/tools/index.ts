@@ -328,13 +328,18 @@ export const READ_NOTE_TOOL = {
 
 export const UPDATE_NOTE_TOOL = {
   name: 'remnote_update_note',
-  description: 'Update an existing note in RemNote (change title, append content, or modify tags)',
+  description:
+    'Update an existing note in RemNote (change title, append content, replace content, or modify tags)',
   inputSchema: {
     type: 'object' as const,
     properties: {
       remId: { type: 'string', description: 'The Rem ID to update' },
       title: { type: 'string', description: 'New title' },
       appendContent: { type: 'string', description: 'Content to append as children' },
+      replaceContent: {
+        type: 'string',
+        description: 'Content to replace direct children (empty string clears children)',
+      },
       addTags: { type: 'array', items: { type: 'string' }, description: 'Tags to add' },
       removeTags: { type: 'array', items: { type: 'string' }, description: 'Tags to remove' },
     },

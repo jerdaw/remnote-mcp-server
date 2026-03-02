@@ -263,10 +263,17 @@ Update an existing note - change title, append content, or modify tags.
 | `remId` | string | Yes | The Rem ID to update |
 | `title` | string | No | New title for the note |
 | `appendContent` | string | No | Content to append as children (newline-separated) |
+| `replaceContent` | string | No | Replace direct children (newline-separated; empty string clears all direct children) |
 | `addTags` | string[] | No | Tags to add |
 | `removeTags` | string[] | No | Tags to remove |
 
-**Note:** At least one of `title`, `appendContent`, `addTags`, or `removeTags` must be provided.
+**Notes:**
+
+- At least one of `title`, `appendContent`, `replaceContent`, `addTags`, or `removeTags` must be provided.
+- `appendContent` and `replaceContent` are mutually exclusive in one request.
+- Replace calls can be rejected by bridge policy settings:
+  - `acceptWriteOperations=false` blocks all update operations.
+  - `acceptReplaceOperation=false` blocks replace operations.
 
 ### Usage
 
@@ -280,6 +287,18 @@ Rename note abc123 to "Updated Project Name"
 Add to note def456:
 - New task
 - Another item
+```
+
+**Replace content:**
+```
+Replace note def456 content with:
+- Fresh item 1
+- Fresh item 2
+```
+
+**Clear direct children:**
+```
+Replace content of note def456 with an empty string
 ```
 
 **Add tags:**
@@ -317,7 +336,9 @@ Returns confirmation of updates:
 ### Tips
 
 - You can update multiple properties in one call
-- `appendContent` adds to the end - doesn't replace existing content
+- `appendContent` adds to the end and keeps existing content.
+- `replaceContent` rewrites direct child bullets under the note.
+- `replaceContent: ""` clears all direct children.
 - Tags are case-sensitive
 - New tags are created automatically when added
 
