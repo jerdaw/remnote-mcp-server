@@ -6,7 +6,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   CreateNoteSchema,
-  CreateNoteMdSchema,
   SearchSchema,
   SearchByTagSchema,
   ReadNoteSchema,
@@ -15,12 +14,18 @@ import {
 } from '../../src/schemas/remnote-schemas.js';
 
 describe('CreateNoteSchema', () => {
-  it('should validate with only required title field', () => {
+  it('should validate with only title field', () => {
     const result = CreateNoteSchema.parse({ title: 'Test' });
     expect(result.title).toBe('Test');
     expect(result.content).toBeUndefined();
     expect(result.parentId).toBeUndefined();
     expect(result.tags).toBeUndefined();
+  });
+
+  it('should validate with only content field', () => {
+    const result = CreateNoteSchema.parse({ content: '- item' });
+    expect(result.content).toBe('- item');
+    expect(result.title).toBeUndefined();
   });
 
   it('should validate with all fields', () => {
@@ -29,16 +34,13 @@ describe('CreateNoteSchema', () => {
       content: 'Content',
       parentId: 'parent-123',
       tags: ['tag1', 'tag2'],
-      backText: 'Back text',
-      isConcept: true,
-      isDescriptor: false,
     };
     const result = CreateNoteSchema.parse(input);
     expect(result).toEqual(input);
   });
 
-  it('should reject missing title', () => {
-    expect(() => CreateNoteSchema.parse({})).toThrow();
+  it('should reject empty object', () => {
+    expect(() => CreateNoteSchema.parse({})).toThrow('create_note requires either title or content');
   });
 
   it('should reject non-string title', () => {
@@ -50,30 +52,6 @@ describe('CreateNoteSchema', () => {
   });
 });
 
-describe('CreateNoteMdSchema', () => {
-  it('should validate with only required content field', () => {
-    const result = CreateNoteMdSchema.parse({ content: '- item1\n  - item2' });
-    expect(result.content).toBe('- item1\n  - item2');
-    expect(result.title).toBeUndefined();
-    expect(result.parentId).toBeUndefined();
-    expect(result.tags).toBeUndefined();
-  });
-
-  it('should validate with all fields', () => {
-    const input = {
-      content: '- item',
-      title: 'Root Title',
-      parentId: 'parent-123',
-      tags: ['tag1'],
-    };
-    const result = CreateNoteMdSchema.parse(input);
-    expect(result).toEqual(input);
-  });
-
-  it('should reject missing content', () => {
-    expect(() => CreateNoteMdSchema.parse({})).toThrow();
-  });
-});
 
 describe('SearchSchema', () => {
   it('should validate with only required query field', () => {

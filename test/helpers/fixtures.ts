@@ -69,9 +69,8 @@ export const createBridgeResponse = (
 
 // Sample RemNote API responses
 export const sampleNoteResult = {
-  id: 'rem-id-123',
-  title: 'Sample Note',
-  content: ['Child 1', 'Child 2'],
+  remIds: ['rem-id-123', 'child-1-id', 'child-2-id'],
+  titles: ['Sample Note', 'Child 1', 'Child 2'],
 };
 
 export const sampleSearchResults = {

@@ -161,18 +161,45 @@ export async function createSearchWorkflow(
   if (!state.searchByTagTag) {
     state.searchByTagTag = `mcp-test-tag-${ctx.runId.replace(/[^a-zA-Z0-9]/g, '-')}`;
   }
-
+  // Step 0: Verify error on empty create (bridge-side validation)
+  {
+    const start = Date.now();
+    try {
+      try {
+        await ctx.client.callTool('remnote_create_note', {});
+        throw new Error('Should have failed on empty input');
+      } catch (e: any) {
+        // Success case: bridge should throw 'create_note requires either title or content'
+        const msg = e.message || String(e);
+        if (msg.includes('Should have failed')) {
+          throw e;
+        }
+      }
+      steps.push({
+        label: 'Verify error on empty create',
+        passed: true,
+        durationMs: Date.now() - start,
+      });
+    } catch (e) {
+      steps.push({
+        label: 'Verify error on empty create',
+        passed: false,
+        durationMs: Date.now() - start,
+        error: (e as Error).message,
+      });
+    }
+  }
   // Step 1: Create simple note
   {
     const start = Date.now();
     try {
-      const result = await ctx.client.callTool('remnote_create_note', {
+      const result = (await ctx.client.callTool('remnote_create_note', {
         title: `[MCP-TEST] Simple Note ${ctx.runId}`,
         parentId: state.integrationParentRemId,
-      });
-      assertHasField(result, 'remId', 'create simple note');
-      assertTruthy(typeof result.remId === 'string', 'remId should be a string');
-      state.noteAId = result.remId as string;
+      })) as { remIds: string[] };
+      assertHasField(result, 'remIds', 'create simple note');
+      assertIsArray(result.remIds, 'remIds should be an array');
+      state.noteAId = result.remIds[0];
       steps.push({ label: 'Create simple note', passed: true, durationMs: Date.now() - start });
     } catch (e) {
       steps.push({
@@ -188,15 +215,15 @@ export async function createSearchWorkflow(
   {
     const start = Date.now();
     try {
-      const result = await ctx.client.callTool('remnote_create_note', {
+      const result = (await ctx.client.callTool('remnote_create_note', {
         title: `[MCP-TEST] Rich Note ${ctx.runId}`,
         parentId: state.integrationParentRemId,
         content: 'Bullet one\nBullet two\nBullet three',
         tags: [state.searchByTagTag],
-      });
-      assertHasField(result, 'remId', 'create rich note');
-      assertTruthy(typeof result.remId === 'string', 'remId should be a string');
-      state.noteBId = result.remId as string;
+      })) as { remIds: string[] };
+      assertHasField(result, 'remIds', 'create rich note');
+      assertIsArray(result.remIds, 'remIds should be an array');
+      state.noteBId = result.remIds[0];
       steps.push({
         label: 'Create rich note with content and tags',
         passed: true,
@@ -212,20 +239,19 @@ export async function createSearchWorkflow(
     }
   }
 
-  // Step 3: Create flashcard note (with back-text)
+  // Step 3: Create flashcard note
   {
     const start = Date.now();
     try {
-      const result = await ctx.client.callTool('remnote_create_note', {
+      const result = (await ctx.client.callTool('remnote_create_note', {
         title: `[MCP-TEST] Flashcard Note ${ctx.runId}`,
         parentId: state.integrationParentRemId,
-        backText: 'This is the back of the flashcard',
-        isConcept: true,
+        content: 'Front :: Back',
         tags: [state.searchByTagTag as string],
-      });
-      assertHasField(result, 'remId', 'create flashcard note');
-      assertTruthy(typeof result.remId === 'string', 'remId should be a string');
-      state.noteCId = result.remId as string;
+      })) as { remIds: string[] };
+      assertHasField(result, 'remIds', 'create flashcard note');
+      assertIsArray(result.remIds, 'remIds should be an array');
+      state.noteCId = result.remIds[0];
       steps.push({ label: 'Create flashcard note', passed: true, durationMs: Date.now() - start });
     } catch (e) {
       steps.push({
@@ -263,12 +289,12 @@ export async function createSearchWorkflow(
         `    - Wrong option`
       ].join('\n');
 
-      const result = await ctx.client.callTool('remnote_create_note_md', {
+      const result = (await ctx.client.callTool('remnote_create_note', {
         content: markdownContent,
         title: `[MCP-TEST] Flashcard Tree ${ctx.runId}`,
         parentId: state.integrationParentRemId,
         tags: [state.searchByTagTag as string],
-      });
+      })) as { remIds: string[] };
 
       assertHasField(result, 'remIds', 'create markdown tree');
       assertIsArray(result.remIds, 'markdown tree remIds');
@@ -287,7 +313,7 @@ export async function createSearchWorkflow(
   // Wait for RemNote indexing
   await new Promise((resolve) => setTimeout(resolve, delay));
 
-  // Step 3: Search finds simple note
+  // Step 5: Search finds simple note
   {
     const start = Date.now();
     try {
@@ -319,7 +345,7 @@ export async function createSearchWorkflow(
     }
   }
 
-  // Step 4-6: Search with includeContent modes
+  // Step 6-8: Search with includeContent modes
   for (const mode of ['markdown', 'structured', 'none'] as const) {
     const start = Date.now();
     const label = `Search includeContent=${mode} returns expected shape`;
@@ -362,7 +388,7 @@ export async function createSearchWorkflow(
     }
   }
 
-  // Step 7-9: Search by tag with includeContent modes
+  // Step 9-11: Search by tag with includeContent modes
   let expectedTagTarget: ExpectedTagTarget | undefined;
   {
     const start = Date.now();

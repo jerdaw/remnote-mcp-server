@@ -7,7 +7,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   registerAllTools,
   CREATE_NOTE_TOOL,
-  CREATE_NOTE_MD_TOOL,
   SEARCH_TOOL,
   SEARCH_BY_TAG_TOOL,
   READ_NOTE_TOOL,
@@ -58,17 +57,10 @@ describe('Tool Definitions', () => {
     expect(CREATE_NOTE_TOOL.name).toBe('remnote_create_note');
   });
 
-  it('should have required title field for CREATE_NOTE_TOOL', () => {
-    expect(CREATE_NOTE_TOOL.inputSchema.required).toContain('title');
+  it('should allow optional title field for CREATE_NOTE_TOOL', () => {
+    expect(CREATE_NOTE_TOOL.inputSchema.required).not.toContain('title');
   });
 
-  it('should have correct name for CREATE_NOTE_MD_TOOL', () => {
-    expect(CREATE_NOTE_MD_TOOL.name).toBe('remnote_create_note_md');
-  });
-
-  it('should have required content field for CREATE_NOTE_MD_TOOL', () => {
-    expect(CREATE_NOTE_MD_TOOL.inputSchema.required).toContain('content');
-  });
 
   it('should have correct name for SEARCH_TOOL', () => {
     expect(SEARCH_TOOL.name).toBe('remnote_search');
@@ -212,7 +204,7 @@ describe('Tool Registration', () => {
       tools: unknown[];
     };
 
-    expect(result.tools).toHaveLength(9);
+    expect(result.tools).toHaveLength(8);
   });
 
   it('should include all tool names in list', async () => {
@@ -224,7 +216,6 @@ describe('Tool Registration', () => {
 
     const names = result.tools.map((t) => t.name);
     expect(names).toContain('remnote_create_note');
-    expect(names).toContain('remnote_create_note_md');
     expect(names).toContain('remnote_search');
     expect(names).toContain('remnote_search_by_tag');
     expect(names).toContain('remnote_read_note');
@@ -267,13 +258,13 @@ describe('Tool Handlers - create_note', () => {
     expect(parsed).toEqual(sampleNoteResult);
   });
 
-  it('should reject invalid input', async () => {
+  it('should allow input without title', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
-      params: { name: 'remnote_create_note', arguments: {} }, // Missing title
+      params: { name: 'remnote_create_note', arguments: { content: '- item' } },
     })) as { isError: boolean; content: { text: string }[] };
 
-    expect(result.isError).toBe(true);
-    expect(result.content[0].text).toContain('Error');
+    expect(result.isError).toBeUndefined();
+    expect(mockWsServer.sendRequest).toHaveBeenCalledWith('create_note', { content: '- item' });
   });
 });
 
