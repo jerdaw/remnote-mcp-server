@@ -159,7 +159,7 @@ RemNote MCP Server v0.2.1 listening { wsPort: 3002, httpPort: 3001 }
 1. **Verify plugin settings in RemNote:**
    - WebSocket URL: `ws://127.0.0.1:3002`
    - Check for typos in URL
-   - Open the Automation Bridge panel in the right sidebar
+   - Open the Automation Bridge panel in the right sidebar if you want to inspect status and logs
 2. **Verify WebSocket port is listening:**
    ```bash
    lsof -i :3002
@@ -172,7 +172,7 @@ RemNote MCP Server v0.2.1 listening { wsPort: 3002, httpPort: 3001 }
    # Look for WebSocket connection messages
    ```
 
-4. **Use `Reconnect` in the bridge panel** if RemNote was already open before the server started
+4. **Wait for background retry or use `Reconnect` in the bridge panel** if RemNote was already open before the server started
 5. **Restart RemNote** after changing plugin settings
 6. **Reinstall plugin** if persistent:
    - Remove plugin from RemNote

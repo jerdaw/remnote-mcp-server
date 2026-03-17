@@ -74,9 +74,8 @@ The server requires the RemNote Automation Bridge plugin to communicate with Rem
 
 Once installed, configure the plugin:
 
-1. Open the Automation Bridge panel in RemNote's right sidebar
-2. Verify the WebSocket URL: `ws://127.0.0.1:3002` (default)
-3. Keep that panel open while you verify the connection
+1. Verify the WebSocket URL in plugin settings is `ws://127.0.0.1:3002` (default)
+2. Open the Automation Bridge panel only if you want to monitor status or use manual reconnect
 
 ## Starting the Server
 
@@ -117,12 +116,12 @@ For more CLI options, see [CLI Options Reference](cli-options.md).
 
 1. Start `remnote-mcp-server`
 2. Open RemNote
-3. Open the Automation Bridge panel in the right sidebar
-4. Wait for the panel to show **Connected**
+3. Wait for the bridge to connect automatically in the background
+4. Open the Automation Bridge panel only if you want to confirm status
 5. Only then connect your MCP client to `http://localhost:3001/mcp`
 
-If RemNote was already open before the server started, the bridge may need a manual **Reconnect** click after its
-automatic retries stop.
+If RemNote was already open before the server started, the bridge should still connect automatically after background
+retry. The panel's **Reconnect** button remains available as a faster manual retry.
 
 ## Verification
 
@@ -142,8 +141,8 @@ You should see the `node` process listening on both ports.
 
 ### 2. Check RemNote Plugin Connection
 
-Open RemNote with the RemNote Automation Bridge plugin installed, then open the Automation Bridge panel in the right
-sidebar. The panel should show:
+Open RemNote with the RemNote Automation Bridge plugin installed. The bridge should connect automatically in the
+background. If you open the Automation Bridge panel in the right sidebar, it should show:
 
 - **Status:** "Connected" (green indicator)
 - **Server:** ws://127.0.0.1:3002

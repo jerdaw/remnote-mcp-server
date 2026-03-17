@@ -13,7 +13,7 @@ git workflows directly from the terminal.
 - RemNote MCP Server installed and running
 - Claude Code CLI installed
 - RemNote app running with RemNote Automation Bridge plugin installed
-- Automation Bridge sidebar panel opened in RemNote so the bridge runtime is mounted and connected
+- RemNote bridge allowed enough time to auto-connect in the background, or the Automation Bridge panel opened to verify status
 
 ## Quick Start
 
@@ -23,11 +23,11 @@ git workflows directly from the terminal.
 remnote-mcp-server
 ```
 
-**2. Open RemNote and connect the bridge plugin:**
+**2. Open RemNote and let the bridge auto-connect:**
 
-- Open the Automation Bridge panel in RemNote's right sidebar
-- Confirm it shows **Connected**
-- If RemNote was already open before the server started, click **Reconnect** if needed
+- Open RemNote with the Automation Bridge plugin enabled
+- Wait for the bridge to connect in the background
+- Open the Automation Bridge panel only if you want to confirm status or use manual **Reconnect**
 
 **3. Add the MCP server:**
 

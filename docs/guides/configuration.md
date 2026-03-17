@@ -20,11 +20,11 @@ The RemNote MCP Server uses Streamable HTTP transport, which means:
 remnote-mcp-server
 ```
 
-**2. Open RemNote and connect the bridge plugin:**
+**2. Open RemNote and let the bridge auto-connect:**
 
-- Open the Automation Bridge panel in RemNote's right sidebar
-- Confirm the plugin connects to `ws://127.0.0.1:3002`
-- If RemNote was already open before the server started, click **Reconnect** if the bridge exhausted its retries
+- Open RemNote with the Automation Bridge plugin enabled
+- The bridge now starts automatically on plugin activation and should connect to `ws://127.0.0.1:3002` in the background
+- Open the Automation Bridge panel only if you want to confirm status or trigger an immediate manual **Reconnect**
 
 **3. Configure your AI client:**
 
@@ -115,8 +115,8 @@ The RemNote Automation Bridge plugin must be configured to match the server's We
 
 - **WebSocket URL:** `ws://127.0.0.1:3002` (default, or your custom port)
 
-On current bridge builds, the plugin starts its WebSocket connection attempts when the Automation Bridge sidebar panel
-is opened. If the server was started after those retries were exhausted, use the panel's **Reconnect** button.
+On current bridge builds, the plugin starts its WebSocket connection attempts automatically on plugin activation. The
+Automation Bridge sidebar panel is optional and exists for status, logs, and manual reconnect.
 
 ### Verifying Plugin Connection
 
@@ -130,8 +130,8 @@ The plugin control panel should show:
 Recommended order:
 
 1. Start `remnote-mcp-server`
-2. Open RemNote and open the Automation Bridge sidebar panel
-3. Wait for the panel to show **Connected**
+2. Open RemNote
+3. Wait for the bridge to connect in the background, or open the Automation Bridge panel if you want to confirm status
 4. Then connect your MCP client to `http://localhost:3001/mcp`
 
 If the status shows "Disconnected," see the [Troubleshooting Guide](troubleshooting.md#plugin-wont-connect).
@@ -194,7 +194,8 @@ If not running, start the server:
 remnote-mcp-server
 ```
 
-Then open the RemNote Automation Bridge panel and confirm the plugin is connected before retrying the MCP client.
+Then wait for the RemNote bridge to connect automatically before retrying the MCP client, or use the panel's
+**Reconnect** button if you want an immediate retry.
 
 ### Wrong Port in Configuration
 
