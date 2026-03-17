@@ -27,11 +27,61 @@ function summarizeReadResult(result: Record<string, unknown>): Record<string, un
   };
 }
 
+function findMatchingSearchResult(
+  results: Array<Record<string, unknown>>,
+  remId: string
+): Record<string, unknown> {
+  const match = results.find((r) => r.remId === remId);
+  assertTruthy(match, 'should find matching search-by-tag target');
+  return match as Record<string, unknown>;
+}
+
+async function resolveExpectedSearchByTagTarget(
+  ctx: WorkflowContext,
+  taggedRemId: string
+): Promise<string> {
+  const tagged = (await ctx.client.callTool('remnote_read_note', {
+    remId: taggedRemId,
+    includeContent: 'none',
+  })) as Record<string, unknown>;
+
+  let currentParentId =
+    typeof tagged.parentRemId === 'string' && tagged.parentRemId.length > 0
+      ? (tagged.parentRemId as string)
+      : undefined;
+  let nearestNonDocumentAncestorId: string | undefined;
+
+  while (currentParentId) {
+    const parent = (await ctx.client.callTool('remnote_read_note', {
+      remId: currentParentId,
+      includeContent: 'none',
+    })) as Record<string, unknown>;
+
+    const parentRemId = parent.remId as string;
+    const parentRemType = parent.remType as string;
+    if (!nearestNonDocumentAncestorId) {
+      nearestNonDocumentAncestorId = parentRemId;
+    }
+
+    if (parentRemType === 'document' || parentRemType === 'dailyDocument') {
+      return parentRemId;
+    }
+
+    currentParentId =
+      typeof parent.parentRemId === 'string' && parent.parentRemId.length > 0
+        ? (parent.parentRemId as string)
+        : undefined;
+  }
+
+  return nearestNonDocumentAncestorId ?? (tagged.remId as string);
+}
+
 export async function readUpdateWorkflow(
   ctx: WorkflowContext,
   state: SharedState
 ): Promise<WorkflowResult> {
   const steps: StepResult[] = [];
+  const tagVerificationName = `mcp-integration-verified-${ctx.runId.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
   if (
     !state.noteAId ||
@@ -299,12 +349,25 @@ export async function readUpdateWorkflow(
   {
     const start = Date.now();
     try {
+      const expectedTargetRemId = await resolveExpectedSearchByTagTarget(
+        ctx,
+        state.noteAId as string
+      );
       const result = (await ctx.client.callTool('remnote_update_note', {
         remId: state.noteAId,
-        addTags: ['mcp-integration-verified'],
+        addTags: [tagVerificationName],
       })) as { remIds: string[] };
       assertHasField(result, 'remIds', 'add tag should succeed');
       assertIsArray(result.remIds, 'add tag remIds');
+      const taggedSearch = await ctx.client.callTool('remnote_search_by_tag', {
+        tag: tagVerificationName,
+        includeContent: 'none',
+        limit: 10,
+      });
+      assertHasField(taggedSearch, 'results', 'search_by_tag after add tag');
+      assertIsArray(taggedSearch.results, 'search_by_tag after add tag results');
+      const taggedResults = taggedSearch.results as Array<Record<string, unknown>>;
+      findMatchingSearchResult(taggedResults, expectedTargetRemId);
       steps.push({ label: 'Add tag', passed: true, durationMs: Date.now() - start });
     } catch (e) {
       steps.push({
@@ -320,12 +383,26 @@ export async function readUpdateWorkflow(
   {
     const start = Date.now();
     try {
+      const expectedTargetRemId = await resolveExpectedSearchByTagTarget(
+        ctx,
+        state.noteAId as string
+      );
       const result = (await ctx.client.callTool('remnote_update_note', {
         remId: state.noteAId,
-        removeTags: ['mcp-integration-verified'],
+        removeTags: [tagVerificationName],
       })) as { remIds: string[] };
       assertHasField(result, 'remIds', 'remove tag should succeed');
       assertIsArray(result.remIds, 'remove tag remIds');
+      const taggedSearch = await ctx.client.callTool('remnote_search_by_tag', {
+        tag: tagVerificationName,
+        includeContent: 'none',
+        limit: 10,
+      });
+      assertHasField(taggedSearch, 'results', 'search_by_tag after remove tag');
+      assertIsArray(taggedSearch.results, 'search_by_tag after remove tag results');
+      const taggedResults = taggedSearch.results as Array<Record<string, unknown>>;
+      const match = taggedResults.find((r) => r.remId === expectedTargetRemId);
+      assertTruthy(!match, 'removed tag should no longer resolve to the tagged target');
       steps.push({ label: 'Remove tag', passed: true, durationMs: Date.now() - start });
     } catch (e) {
       steps.push({
