@@ -15,6 +15,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
   enabled for current scripts.
 - Migrated the repo to `eslint.config.mjs` flat config and aligned runtime and local tooling on Node 20.19.0 via
   package metadata, `.nvmrc`, and `node-check.sh`.
+- Pinned the shared GitHub Actions CI workflow to `robert7/workflows/.github/workflows/node-ci.yml@v0.2.0`.
 
 
 ## [0.10.0] - 2026-03-18
