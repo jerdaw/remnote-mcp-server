@@ -9,13 +9,12 @@
  * - Must contain integrationTest.tableNameOrId
  */
 
+import { assertTruthy, assertHasField, assertIsArray, assertEqual } from '../assertions.js';
 import {
-  assertTruthy,
-  assertHasField,
-  assertIsArray,
-  assertEqual,
-} from '../assertions.js';
-import { hasTableConfig, getIntegrationTestConfig, getTableConfigWarning } from '../../helpers/integration-config.js';
+  hasTableConfig,
+  getIntegrationTestConfig,
+  getTableConfigWarning,
+} from '../../helpers/integration-config.js';
 import type { WorkflowContext, WorkflowResult, SharedState, StepResult } from '../types';
 
 /** Expected structure of read_table response */
@@ -110,10 +109,7 @@ export async function readTableWorkflow(
       assertHasField(result, 'rows', 'read_table with limit response');
       const rows = result.rows as ReadTableResponse['rows'];
       assertIsArray(rows, 'rows should be an array');
-      assertTruthy(
-        Array.isArray(rows) && rows.length <= 1,
-        'limit=1 should return at most 1 row'
-      );
+      assertTruthy(Array.isArray(rows) && rows.length <= 1, 'limit=1 should return at most 1 row');
 
       steps.push({
         label: 'Read table with limit=1',
