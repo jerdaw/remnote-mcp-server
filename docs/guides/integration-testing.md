@@ -68,3 +68,40 @@ To clean up: search your RemNote knowledge base for `[MCP-TEST]` and delete the 
 The integration tests are deliberately separate from the unit test suite. They require external infrastructure (running
 server + connected plugin), create real content, and take seconds rather than milliseconds. They run via `tsx` with
 custom lightweight assertions — no vitest dependency — to keep them independent of the mocked test environment.
+
+---
+
+## Testing read_table
+
+The read_table integration test (workflow 06) requires an Advanced Table in RemNote to be pre-configured. This allows
+testing the table reading functionality without needing write operations.
+
+### Setup
+
+1. Create an Advanced Table in RemNote with some data (at least one column and one row)
+2. Find the table's name or `remId` (you can use the table name directly or get the remId from the browser's developer console)
+3. Create or edit the config file at:
+
+   **Windows:** `C:\Users\<your-username>\.remnote-mcp-bridge\remnote-mcp-bridge.json`
+
+   **macOS/Linux:** `~/.remnote-mcp-bridge/remnote-mcp-bridge.json`
+
+4. Add the integration test configuration (use either `tableNameOrId` with the table name or the table's remId):
+
+```json
+{
+  "integrationTest": {
+    "tableNameOrId": "Your Table Name"
+  }
+}
+```
+
+### Running
+
+After setting up the config, run the integration tests as usual:
+
+```bash
+npm run test:integration
+```
+
+The read_table workflow will be skipped with a warning if the config is missing or invalid.

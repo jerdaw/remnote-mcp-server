@@ -20,6 +20,7 @@ import { createSearchWorkflow } from './workflows/02-create-search.js';
 import { readUpdateWorkflow } from './workflows/03-read-update.js';
 import { journalWorkflow } from './workflows/04-journal.js';
 import { errorCasesWorkflow } from './workflows/05-error-cases.js';
+import { readTableWorkflow } from './workflows/06-read-table.js';
 import type { WorkflowResult, WorkflowFn, SharedState } from './types.js';
 
 const RESET = '\x1b[0m';
@@ -298,6 +299,7 @@ async function main(): Promise<void> {
     { name: 'Read & Update', fn: readUpdateWorkflow },
     { name: 'Journal', fn: journalWorkflow },
     { name: 'Error Cases', fn: errorCasesWorkflow },
+    { name: 'Read Table', fn: readTableWorkflow },
   ];
 
   try {
