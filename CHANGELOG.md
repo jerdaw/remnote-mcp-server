@@ -7,6 +7,11 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Documentation
+
+- Added a README note pointing contributors to the shared bridge pull request guide for cross-repo parity and linked PR expectations.
+- Replaced the placeholder pull request template with a shorter repo-specific template that links to the shared bridge PR guide.
+
 ### Changed
 
 - Moved GitHub Actions CI to the shared reusable workflow in `robert7/workflows`, keeping local `main` push and pull

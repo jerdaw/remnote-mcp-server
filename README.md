@@ -252,6 +252,8 @@ npm test             # Run test suite
 
 See the [Development Setup Guide](docs/guides/development-setup.md) for complete instructions.
 
+Pull requests that affect bridge-consumer behavior should follow the shared PR rules in the bridge repo: [Pull Request Guide](https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/guides/pull-request-guide.md). In particular, keep bridge/server/CLI parity for shared functionality changes and link related PRs across the affected repos.
+
 ## Related Projects
 
 - [RemNote Automation Bridge](https://github.com/robert7/remnote-mcp-bridge) - Browser plugin for RemNote integration
