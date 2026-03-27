@@ -32,7 +32,7 @@ npm run test:integration -- --yes
 
 ## What It Tests
 
-The suite runs five sequential workflows:
+The suite runs six sequential workflows:
 
 1. **Status Check** — Verifies the server reports a connected plugin. If this fails, all subsequent workflows are
    skipped since there's no point testing tools without a live connection.
@@ -43,6 +43,8 @@ The suite runs five sequential workflows:
 4. **Journal** — Appends entries to today's daily document with and without timestamps.
 5. **Error Cases** — Sends invalid inputs (nonexistent IDs, missing required fields) and verifies the server handles
    them gracefully.
+6. **Read Table** — Reads a pre-configured Advanced Table by name and/or Rem ID, then validates pagination, filtering,
+   and not-found behavior.
 
 ## Test Artifacts
 
@@ -79,22 +81,26 @@ testing the table reading functionality without needing write operations.
 ### Setup
 
 1. Create an Advanced Table in RemNote with some data (at least one column and one row)
-2. Find the table's name or `remId` (you can use the table name directly or get the remId from the browser's developer console)
+2. Find the table's exact name and, if possible, its `remId` (for deterministic ID-lookup coverage)
 3. Create or edit the config file at:
 
    **Windows:** `C:\Users\<your-username>\.remnote-mcp-bridge\remnote-mcp-bridge.json`
 
    **macOS/Linux:** `~/.remnote-mcp-bridge/remnote-mcp-bridge.json`
 
-4. Add the integration test configuration (use either `tableNameOrId` with the table name or the table's remId):
+4. Add the integration test configuration:
 
 ```json
 {
   "integrationTest": {
-    "tableNameOrId": "Your Table Name"
+    "tableName": "Your Table Name",
+    "tableRemId": "abc123def"
   }
 }
 ```
+
+`tableNameOrId` is still accepted as a backward-compatible fallback, but `tableName` + `tableRemId` gives the best
+coverage.
 
 ### Running
 
@@ -104,4 +110,4 @@ After setting up the config, run the integration tests as usual:
 npm run test:integration
 ```
 
-The read_table workflow will be skipped with a warning if the config is missing or invalid.
+The read_table workflow is skipped when the table config is missing or invalid.

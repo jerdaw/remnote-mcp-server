@@ -12,6 +12,15 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - `ReadTableSchema` Zod validation schema with pagination (limit/offset) and propertyFilter support
 - Playbook decision tree updated with table-reading guidance
 
+### Fixed
+- Fixed read-table integration config loading to use `~/.remnote-mcp-bridge/remnote-mcp-bridge.json`, while still
+  accepting the older flat-file path as a fallback.
+- Tightened read-table integration coverage to validate filtering, deterministic error handling, and optional Rem-ID
+  lookup.
+
+### Documentation
+- Updated README and integration docs to document `remnote_read_table` and the preferred table test config.
+
 ## [0.10.0] - 2026-03-18
 
 ### Documentation
