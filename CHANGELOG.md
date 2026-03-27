@@ -8,9 +8,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- New `remnote_read_table` tool for reading Advanced Table data (columns, rows, cell values)
-- `ReadTableSchema` Zod validation schema with pagination (limit/offset) and propertyFilter support
-- Playbook decision tree updated with table-reading guidance
+- Added the `remnote_read_table` tool for reading Advanced Table data with pagination and column filtering.
 - Added `./run-agent-integration-test.sh` for explicit agent-assisted live integration runs that wait for a connected
   RemNote bridge before launching the suite.
 
@@ -37,13 +35,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
   `tableTitle`.
 
 ### Fixed
-- Fixed read-table integration config loading to use only
-  `~/.remnote-mcp-bridge/remnote-mcp-bridge.json`.
-- Tightened read-table integration coverage to validate filtering, deterministic error handling, and Rem-ID
-  lookup.
-- Improved read-table integration diagnostics so Rem-ID validation reports independently from name-lookup failures.
 - Hardened `run-agent-integration-test.sh` to build the MCP server before startup, stop the CLI daemon before MCP
   startup, and reuse server-log context on timeouts.
+
+### Attribution
+
+- Most of the cross-repo `read-table` work in this release was implemented by @timbeckss.
 
 ## [0.10.0] - 2026-03-18
 
