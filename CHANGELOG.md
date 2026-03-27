@@ -22,6 +22,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Replaced the blanket agent ban in integration-test policy docs with the guarded wrapper flow for explicit human-requested live runs.
 - Clarified that agent-assisted live runs still require the human collaborator to start the bridge first and restart it
   after bridge-code changes before reruns.
+- Clarified that switching from CLI live integration tests to MCP server live integration tests requires the CLI daemon
+  to be stopped first.
 
 ### Changed
 - Moved GitHub Actions CI to the shared reusable workflow in `robert7/workflows`, keeping local `main` push and pull
@@ -40,6 +42,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Tightened read-table integration coverage to validate filtering, deterministic error handling, and Rem-ID
   lookup.
 - Improved read-table integration diagnostics so Rem-ID validation reports independently from name-lookup failures.
+- Hardened `run-agent-integration-test.sh` to build the MCP server before startup, stop the CLI daemon before MCP
+  startup, and reuse server-log context on timeouts.
 
 ## [0.10.0] - 2026-03-18
 

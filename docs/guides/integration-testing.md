@@ -81,6 +81,8 @@ message when the RemNote bridge never connects.
 Agent-assisted flow still has one manual gate: the agent should ask the human collaborator to start the bridge first,
 and must ask for a bridge restart before reruns if bridge code changed since the current RemNote bridge session
 started.
+When switching from the CLI suite to the MCP server suite, stop the CLI daemon first so the MCP server can bind the
+shared WebSocket port.
 
 Successful runs print a workflow summary and remind you how to clean up the created artifacts.
 
