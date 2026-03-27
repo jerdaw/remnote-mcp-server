@@ -63,6 +63,19 @@ export class WebSocketServer {
 
         this.client = ws;
         this.logger.info('WebSocket client connected');
+        setImmediate(() => {
+          if (ws.readyState !== WebSocket.OPEN) {
+            return;
+          }
+
+          ws.send(
+            JSON.stringify({
+              type: 'companion_info',
+              kind: 'mcp-server',
+              version: this.serverVersion,
+            })
+          );
+        });
         this.connectCallbacks.forEach((cb) => cb());
 
         ws.on('message', (data) => {

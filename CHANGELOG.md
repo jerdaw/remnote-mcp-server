@@ -11,6 +11,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Added the `remnote_read_table` tool for reading Advanced Table data with pagination and column filtering.
 - Added `./run-agent-integration-test.sh` for explicit agent-assisted live integration runs that wait for a connected
   RemNote bridge before launching the suite.
+- Added a `companion_info` WebSocket handshake so the bridge sidebar can identify a connected MCP server instance and
+  show its version.
 
 ### Documentation
 - Updated README and integration docs to document `remnote_read_table` and the strict table test config.

@@ -288,7 +288,10 @@ describe('WebSocketServer - Request/Response', () => {
   it('should send request with correct format', async () => {
     const messagePromise = new Promise<string>((resolve) => {
       client.on('message', (data) => {
-        resolve(data.toString());
+        const message = JSON.parse(data.toString());
+        if (message.id && message.action) {
+          resolve(JSON.stringify(message));
+        }
       });
     });
 
@@ -311,6 +314,9 @@ describe('WebSocketServer - Request/Response', () => {
 
     client.on('message', (data) => {
       const request = JSON.parse(data.toString());
+      if (!request.id || !request.action) {
+        return;
+      }
       requestId = request.id;
       client.send(JSON.stringify({ id: requestId, result: { data: 'test result' } }));
     });
@@ -322,6 +328,9 @@ describe('WebSocketServer - Request/Response', () => {
   it('should reject with response error', async () => {
     client.on('message', (data) => {
       const request = JSON.parse(data.toString());
+      if (!request.id || !request.action) {
+        return;
+      }
       client.send(JSON.stringify({ id: request.id, error: 'Test error message' }));
     });
 
@@ -333,6 +342,9 @@ describe('WebSocketServer - Request/Response', () => {
 
     client.on('message', (data) => {
       const request = JSON.parse(data.toString());
+      if (!request.id || !request.action) {
+        return;
+      }
       receivedRequests.push({ id: request.id, action: request.action });
 
       // Respond immediately
@@ -353,7 +365,11 @@ describe('WebSocketServer - Request/Response', () => {
 
   it('should timeout request after 5 seconds', async () => {
     // Don't respond to request - let it timeout
-    client.on('message', () => {
+    client.on('message', (data) => {
+      const request = JSON.parse(data.toString());
+      if (!request.id || !request.action) {
+        return;
+      }
       // Intentionally do nothing
     });
 
@@ -509,6 +525,24 @@ describe('WebSocketServer - Hello Message', () => {
 
   it('should expose server version', () => {
     expect(wsServer.getServerVersion()).toBe('0.5.1');
+  });
+
+  it('should announce MCP server identity on connect', async () => {
+    client.close();
+
+    const messagePromise = new Promise<string>((resolve, reject) => {
+      const nextClient = new WebSocket(`ws://localhost:${port}`);
+      nextClient.once('message', (data) => resolve(data.toString()));
+      nextClient.once('error', reject);
+      client = nextClient;
+    });
+
+    const initialMessage = await messagePromise;
+    expect(JSON.parse(initialMessage)).toEqual({
+      type: 'companion_info',
+      kind: 'mcp-server',
+      version: '0.5.1',
+    });
   });
 });
 

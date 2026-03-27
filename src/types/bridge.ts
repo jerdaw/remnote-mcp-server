@@ -24,6 +24,12 @@ export interface HelloMessage {
   version: string;
 }
 
+export interface CompanionInfoMessage {
+  type: 'companion_info';
+  kind: 'cli' | 'mcp-server';
+  version: string;
+}
+
 /**
  * Heartbeat messages
  */
@@ -39,5 +45,6 @@ export type BridgeMessage =
   | BridgeRequest
   | BridgeResponse
   | HelloMessage
+  | CompanionInfoMessage
   | HeartbeatPing
   | HeartbeatPong;
