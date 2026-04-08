@@ -54,7 +54,7 @@
   "homepage": "https://github.com/robert7/remnote-mcp-server#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "commander": "^13.0.0",
+    "commander": "^14.0.3",
     "express": "^5.2.0",
     "pino": "^9.6.0",
     "ws": "^8.20.0",
