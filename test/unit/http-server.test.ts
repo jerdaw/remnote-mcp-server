@@ -541,6 +541,59 @@ describe('HttpMcpServer', () => {
     });
   });
 
+  describe('OAuth Endpoints', () => {
+    it('should serve OAuth authorization server metadata', async () => {
+      await httpServer.start();
+      await waitForHttpServer(port);
+
+      const response = await fetch(
+        `http://127.0.0.1:${port}/.well-known/oauth-authorization-server`
+      );
+
+      expect(response.status).toBe(200);
+      const metadata = await response.json();
+      expect(metadata.issuer).toContain(`${port}`);
+      expect(metadata.authorization_endpoint).toContain('/authorize');
+      expect(metadata.token_endpoint).toContain('/token');
+      expect(metadata.registration_endpoint).toContain('/register');
+      expect(metadata.code_challenge_methods_supported).toContain('S256');
+    });
+
+    it('should serve OAuth protected resource metadata', async () => {
+      await httpServer.start();
+      await waitForHttpServer(port);
+
+      const response = await fetch(
+        `http://127.0.0.1:${port}/.well-known/oauth-protected-resource`
+      );
+
+      expect(response.status).toBe(200);
+      const metadata = await response.json();
+      expect(metadata.resource).toBeDefined();
+      expect(metadata.authorization_servers).toBeInstanceOf(Array);
+      expect(metadata.authorization_servers.length).toBeGreaterThan(0);
+    });
+
+    it('should register a new OAuth client via /register', async () => {
+      await httpServer.start();
+      await waitForHttpServer(port);
+
+      const response = await fetch(`http://127.0.0.1:${port}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          redirect_uris: ['http://localhost:9999/callback'],
+          client_name: 'Test Client',
+        }),
+      });
+
+      expect(response.status).toBe(201);
+      const client = await response.json();
+      expect(client.client_id).toBeTruthy();
+      expect(client.redirect_uris).toEqual(['http://localhost:9999/callback']);
+    });
+  });
+
   describe('Logging', () => {
     it('should log server start', async () => {
       await httpServer.start();
