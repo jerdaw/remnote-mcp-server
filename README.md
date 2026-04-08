@@ -2,12 +2,13 @@
 
 ![Status](https://img.shields.io/badge/status-beta-yellow) ![License](https://img.shields.io/badge/license-MIT-blue)
 ![CI](https://github.com/robert7/remnote-mcp-server/actions/workflows/ci.yml/badge.svg)
+[![npm version](https://img.shields.io/npm/v/remnote-mcp-server)](https://www.npmjs.com/package/remnote-mcp-server)
 [![codecov](https://codecov.io/gh/robert7/remnote-mcp-server/branch/main/graph/badge.svg)](https://codecov.io/gh/robert7/remnote-mcp-server)
 
 MCP server that bridges AI agents (e.g. Claude Code) to [RemNote](https://remnote.com/) via the [RemNote Automation
 Bridge plugin](https://github.com/robert7/remnote-mcp-bridge).
 
-> This is a working solution, but still experimental. If you run into any issues, please [report them here](https://github.com/robert7/remnote-mcp-server/issues).
+> If you run into any issues, please [report them here](https://github.com/robert7/remnote-mcp-server/issues).
 
 ## What is This?
 

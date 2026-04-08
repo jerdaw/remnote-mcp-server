@@ -23,6 +23,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
   matching `@types/node`, `typescript-eslint`, and Vitest companion packages.
 
 ### Documentation
+- Removed the README's "still experimental" wording and kept the issue-reporting link.
+- Added an npm version badge to README install docs so the published package page is one click away.
 - Updated `docs/architecture.md` to document the OAuth 2.1 auto-approve security model and why bearer tokens are not
   enforced at the MCP layer.
 - Documented the MCP `structuredContent` result contract in the README and tools reference, with a link to the
