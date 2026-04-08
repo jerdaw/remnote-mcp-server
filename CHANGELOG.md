@@ -21,6 +21,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
   enforced at the MCP layer.
 - Documented the MCP `structuredContent` result contract in the README and tools reference, with a link to the
   November 25, 2025 MCP tools specification.
+- Expanded the Claude configuration guide to cover Claude Desktop remote connectors, added screenshot-backed setup
+  steps, and renamed it to Claude Desktop / Cowork configuration and moved it to `docs/guides/configuration-claude-desktop-cowork.md`.
 
 ### Attribution
 - Thanks to @gasteigerjo for PR #7.

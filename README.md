@@ -54,7 +54,7 @@ The server acts as a bridge:
 gets its own MCP session while sharing the WebSocket bridge.
 
 **Remote Access:** By default, the server binds to localhost (127.0.0.1) for local AI agents. Cloud-based services like
-Claude Cowork require remote access—use tunneling tools like ngrok to expose the HTTP endpoint securely. The WebSocket
+Claude Desktop and Claude Cowork require remote access—use tunneling tools like ngrok to expose the HTTP endpoint securely. The WebSocket
 connection always stays local for security. See [Remote Access Guide](docs/guides/remote-access.md) for setup.
 
 ## Features
@@ -101,7 +101,7 @@ Keep this terminal running.
 
 - [Configuration Guide](docs/guides/configuration.md) - Overview and generic setup
   - [ChatGPT](docs/guides/configuration-chatgpt.md) - ChatGPT Apps configuration
-  - [Claude Cowork](docs/guides/configuration-claude-cowork.md) - Cloud-based (requires remote access setup)
+  - [Claude Desktop / Cowork](docs/guides/configuration-claude-desktop-cowork.md) - Remote connector setup (requires remote access setup)
   - [Claude Code CLI](docs/guides/configuration-claude-code-CLI.md) - Detailed Claude Code CLI configuration
   - [Accomplish](docs/guides/configuration-accomplish.md) - Accomplish (Openwork) configuration
 
@@ -122,7 +122,7 @@ Keep this terminal running.
 
 - **[CLI Options Reference](docs/guides/cli-options.md)** - Command-line options and environment variables
 - **[MCP Tools Reference](docs/guides/tools-reference.md)** - Detailed reference for all 9 RemNote tools
-- **[Remote Access Setup](docs/guides/remote-access.md)** - Expose server for Claude Cowork (ngrok, etc.)
+- **[Remote Access Setup](docs/guides/remote-access.md)** - Expose server for Claude Desktop / Cowork (ngrok, etc.)
 
 ### Help & Advanced
 
@@ -158,8 +158,7 @@ See the [Tools Reference](docs/guides/tools-reference.md) for detailed usage and
 ## Supported AI Clients
 
 - **[Claude Code CLI](https://claude.com/claude-code)** - Local terminal-based agent
-- **[Claude Cowork](https://claude.com/blog/cowork-research-preview)** - Cloud-based workspace (requires [remote
-  access](docs/guides/remote-access.md))
+- **Claude Desktop / Cowork** - Remote connector clients (require [remote access](docs/guides/remote-access.md))
 - **[Accomplish](https://github.com/accomplish-ai/accomplish)** - Task-based MCP client (formerly Openwork)
 - **Any MCP client** supporting Streamable HTTP transport
 

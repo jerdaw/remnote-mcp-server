@@ -36,12 +36,11 @@ PS: I first treated the "take melatonin ~7 hours before sleep" claim as a model 
 answer, ChatGPT quoted my actual note and context ("Take melatonin 9 hours after wake and 7 before sleep, eg 5 PM" for
 delayed phase sleep disorder), so this was still a distortion, but not fully made up.
 
-## Claude Cowork
+## Claude Desktop / Cowork
 
-Cloud-based integration through web interface.
+Cloud-based integration through Anthropic's remote connector interface in Claude Desktop or Cowork.
 
-**Setup:** [Claude Cowork Configuration Guide](guides/configuration-claude-cowork.md) | [Remote Access
-Guide](guides/remote-access.md)
+**Setup:** [Claude Desktop / Cowork Configuration Guide](guides/configuration-claude-desktop-cowork.md) | [Remote Access Guide](guides/remote-access.md)
 
 ### Connection Status Check
 
@@ -54,8 +53,15 @@ read, update, journal append).
 
 ![RemNote Search (Claude Cowork)](images/remnote-mcp-server-demo-claude-cowork2.jpg)
 
-Searching RemNote knowledge base for "blue light & sleep" with AI-generated summary. The RemNote Automation Bridge plugin panel (right
-side) shows connection statistics and recent actions.
+Searching RemNote knowledge base for "blue light & sleep" with AI-generated summary. The RemNote Automation Bridge
+plugin panel (right side) shows connection statistics and recent actions.
+
+### Claude Desktop Search View
+
+![RemNote Search (Claude Desktop / Cowork)](images/remnote-mcp-server-demo-claude-desktop-cowork-search.jpg)
+
+Claude Desktop using the same remote connector to search RemNote for "blue light & sleep", returning the matching
+notes and their key context directly in chat.
 
 ## Accomplish
 

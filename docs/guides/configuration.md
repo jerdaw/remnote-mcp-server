@@ -37,9 +37,8 @@ Choose your AI client and follow its configuration guide:
   their Claude AI models
 - **[Accomplish](configuration-accomplish.md)** - open source AI desktop agent that automates file management, document
   creation, and browser tasks
-- **[Claude Cowork](configuration-claude-cowork.md)** - Anthropic's research preview feature in the Claude Desktop app
-  that extends the agentic architecture
-of Claude Code to non-coding knowledge work
+- **[Claude Desktop / Cowork](configuration-claude-desktop-cowork.md)** - Anthropic remote connector setup
+  for Claude Desktop and Claude Cowork
 
 ## Other MCP Clients
 
@@ -298,7 +297,7 @@ remnote-mcp-server --http-port 3005
 - **AI Client Guides:**
   - [Claude Code Configuration](configuration-claude-code-CLI.md)
   - [Accomplish Configuration](configuration-accomplish.md)
-  - [Claude Cowork Configuration](configuration-claude-cowork.md)
+  - [Claude Desktop / Cowork Configuration](configuration-claude-desktop-cowork.md)
 - **Server Configuration:**
   - [CLI Options Reference](cli-options.md) - Complete CLI flag documentation
   - [Remote Access Setup](remote-access.md) - Expose server for cloud-based clients
