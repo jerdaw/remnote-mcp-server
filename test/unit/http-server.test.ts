@@ -7,14 +7,14 @@ import { waitForHttpServer } from '../helpers/test-server.js';
 
 // Mock WebSocketServer
 vi.mock('../../src/websocket-server.js', () => ({
-  WebSocketServer: vi.fn().mockImplementation(() => ({
-    start: vi.fn().mockResolvedValue(undefined),
-    stop: vi.fn().mockResolvedValue(undefined),
-    sendRequest: vi.fn().mockResolvedValue({ status: 'ok' }),
-    isConnected: vi.fn().mockReturnValue(true),
-    onClientConnect: vi.fn(),
-    onClientDisconnect: vi.fn(),
-  })),
+  WebSocketServer: class MockWebSocketServer {
+    start = vi.fn().mockResolvedValue(undefined);
+    stop = vi.fn().mockResolvedValue(undefined);
+    sendRequest = vi.fn().mockResolvedValue({ status: 'ok' });
+    isConnected = vi.fn().mockReturnValue(true);
+    onClientConnect = vi.fn();
+    onClientDisconnect = vi.fn();
+  },
 }));
 
 describe('HttpMcpServer', () => {

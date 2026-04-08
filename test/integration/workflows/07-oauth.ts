@@ -48,7 +48,6 @@ export async function oauthWorkflow(
   const redirectUri = 'http://localhost:9732/oauth/callback';
   const codeVerifier = 'oauth-integration-verifier-0123456789abcdef';
   const codeChallenge = createCodeChallenge(codeVerifier);
-  let metadata: AuthorizationServerMetadata | null = null;
   let client: RegisteredClient | null = null;
   let authorizationCode: string | null = null;
 
@@ -57,7 +56,7 @@ export async function oauthWorkflow(
     try {
       const response = await fetch(authMetadataUrl);
       assertEqual(response.status, 200, 'authorization metadata status');
-      metadata = (await response.json()) as AuthorizationServerMetadata;
+      const metadata = (await response.json()) as AuthorizationServerMetadata;
       assertEqual(metadata.issuer, `${oauthOrigin}/`, 'authorization metadata issuer');
       assertContains(
         String(metadata.authorization_endpoint),

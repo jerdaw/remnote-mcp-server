@@ -111,7 +111,8 @@ export async function ensureLogDirectory(filePath: string): Promise<void> {
     await mkdir(dir, { recursive: true });
   } catch (error) {
     throw new Error(
-      `Failed to create log directory for ${filePath}: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create log directory for ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
     );
   }
 }
