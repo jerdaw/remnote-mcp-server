@@ -7,6 +7,10 @@ Complete reference for all RemNote MCP tools available through the server.
 The RemNote MCP Server exposes tools that allow AI agents to interact with your RemNote knowledge base. Tools are
 automatically available in any connected MCP client.
 
+Tools with an `outputSchema` return machine-readable data in MCP `structuredContent` and also include the serialized
+JSON in a top-level `content` text block for compatibility with older clients and transcripts. This follows the
+[MCP tools specification](https://modelcontextprotocol.io/specification/2025-11-25/server/tools).
+
 ## Tool Summary
 
 | Tool | Description | Use Case |

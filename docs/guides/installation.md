@@ -11,7 +11,7 @@ Complete installation instructions for the RemNote MCP Server.
 - **An MCP client** - Examples:
   - [Claude Code CLI](https://claude.com/claude-code)
   - [Accomplish](https://github.com/accomplish-ai/accomplish) (formerly Openwork)
-  - [Claude Cowork](https://claude.com/blog/cowork-research-preview) (requires [remote access setup](remote-access.md))
+  - Claude Desktop / Claude Cowork (requires [remote access setup](remote-access.md))
 
 ## Installation from npm
 
@@ -259,7 +259,7 @@ Guide](https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/guides/bridg
 
 ## Next Steps
 
-- [Configure your AI client](configuration.md) - Set up CLI, Accomplish, or Claude Cowork
+- [Configure your AI client](configuration.md) - Set up CLI, Accomplish, or Claude Desktop / Cowork
 - [Learn the MCP tools](tools-reference.md) - Explore available RemNote operations
 - [View demos](../demo.md) - See the server in action with different clients
 

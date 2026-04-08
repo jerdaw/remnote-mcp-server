@@ -763,6 +763,7 @@ export function registerAllTools(server: Server, wsServer: WebSocketServer, logg
       );
 
       return {
+        structuredContent: result as { [key: string]: unknown },
         content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
       };
     } catch (error) {

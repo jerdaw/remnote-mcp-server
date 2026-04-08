@@ -35,9 +35,14 @@ The server operates under a localhost security boundary assumption:
   network. This assumes the local machine is a trusted security boundary.
 - **DNS rebinding protection:** HTTP server uses SDK's `createMcpExpressApp()` which includes DNS rebinding protection
   to prevent malicious websites from accessing localhost services.
-- **No authentication:** Since both the MCP server and RemNote plugin run on the same machine under the same user
-  account, no authentication is implemented between them. The single-client connection model provides basic access
-  control.
+- **OAuth 2.1 (auto-approve):** MCP clients (including Claude Code) proactively initiate OAuth for HTTP-based servers
+  as of MCP SDK ≥ 1.26. The server satisfies this with an in-memory, auto-approving OAuth provider
+  (`LocalhostOAuthProvider`) that handles client registration, authorization, and token issuance transparently. No real
+  secret management is performed; the local machine is the security boundary. Tokens are reset on server restart, and
+  clients re-authenticate automatically.
+- **Unenforced bearer tokens:** The `/mcp` endpoint does not require a valid `Authorization: Bearer` header. Clients
+  that complete OAuth receive a token and send it on every request, but the server does not verify it at the MCP layer.
+  This maintains backward compatibility with non-OAuth clients and avoids breakage when tokens expire between restarts.
 - **Input validation:** All tool parameters are validated at runtime using Zod schemas before being forwarded to the
   RemNote plugin. This prevents malformed requests from reaching RemNote and provides clear error messages to the MCP
   client.
@@ -82,7 +87,8 @@ Potential architectural improvements for consideration:
 
 - **TLS/SSL support:** Add encrypted WebSocket connections (wss://) if the security model changes to allow network
   access
-- **Authentication/authorization:** If multi-user scenarios or network access is required, implement token-based auth
+- **Bearer token enforcement:** Add `requireBearerAuth` middleware to `/mcp` if stricter access control is ever needed
+  (e.g., when binding to a non-localhost interface)
 - **Session persistence:** Optional session resumability across server restarts (currently all sessions lost on restart)
 - **Rate limiting:** Protect against rapid-fire requests that could overwhelm RemNote
 - **Request/response logging:** Persistent logging to file for debugging and auditing (currently only stderr)

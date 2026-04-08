@@ -448,7 +448,7 @@ Invalid session ID: ...
 
 ### Can't Connect from Remote Client
 
-**Symptom:** Claude Cowork or remote client can't connect
+**Symptom:** Claude Desktop, Claude Cowork, or remote client can't connect
 
 **Solutions:**
 
@@ -462,7 +462,7 @@ Invalid session ID: ...
    ```
 
 3. **Verify HTTPS URL (not HTTP):**
-   - Claude Cowork requires HTTPS
+   - Claude Desktop and Claude Cowork require HTTPS
    - ngrok provides HTTPS by default
 4. **Test tunnel endpoint** (see [Testing the MCP HTTP Endpoint](#testing-the-mcp-http-endpoint) and replace URL with
    your ngrok URL)

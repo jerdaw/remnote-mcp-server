@@ -1,6 +1,7 @@
 # Remote Access Setup
 
-How to expose your local RemNote MCP Server to cloud-based services like Claude Cowork and ChatGPT Apps.
+How to expose your local RemNote MCP Server to cloud-based services like Claude Desktop,
+Claude Cowork, and ChatGPT Apps.
 
 ## Overview
 
@@ -16,14 +17,14 @@ Unless you configure authentication, use remote access only for:
 
 - Local development and testing
 - Short-term demonstrations
-- Integration testing with cloud-based agents (for example Claude Cowork or ChatGPT Apps)
+- Integration testing with cloud-based agents (for example Claude Desktop, Claude Cowork, or ChatGPT Apps)
 
 ## Architecture
 
 When using remote access, the architecture becomes:
 
 ```
-Cloud Agent (Claude Cowork or ChatGPT) ↔ Tunnel (HTTPS) ↔ HTTP MCP Server :3001 (127.0.0.1)
+Cloud Agent (Claude Desktop / Cowork or ChatGPT) ↔ Tunnel (HTTPS) ↔ HTTP MCP Server :3001 (127.0.0.1)
                                                           ↕
                                                           WebSocket Server :3002 (127.0.0.1)
                                                           ↕
@@ -245,7 +246,7 @@ If ngrok free-tier limits are hit:
 ## Related Documentation
 
 - [Configuration Guide](configuration.md) - Configure MCP clients
-- [Claude Cowork Configuration](configuration-claude-cowork.md) - Cowork-specific setup steps
+- [Claude Desktop / Cowork Configuration](configuration-claude-desktop-cowork.md) - Anthropic remote connector setup
 - [ChatGPT Configuration](configuration-chatgpt.md) - ChatGPT Apps setup steps
 - [CLI Options Reference](cli-options.md) - Server configuration options
 - [Troubleshooting](troubleshooting.md) - Common issues

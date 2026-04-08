@@ -7,6 +7,26 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- Added OAuth 2.1 support (`LocalhostOAuthProvider`) so MCP clients that proactively initiate OAuth (Claude Code with
+  MCP SDK ≥ 1.26) can connect successfully. The provider auto-approves all client registrations and authorization
+  requests without user interaction; the local machine remains the security boundary. Tokens are in-memory and reset on
+  server restart; clients re-authenticate automatically.
+
+### Fixed
+- Returned `structuredContent` for tools with `outputSchema`, so strict MCP clients accept successful tool results.
+
+### Documentation
+- Updated `docs/architecture.md` to document the OAuth 2.1 auto-approve security model and why bearer tokens are not
+  enforced at the MCP layer.
+- Documented the MCP `structuredContent` result contract in the README and tools reference, with a link to the
+  November 25, 2025 MCP tools specification.
+- Expanded the Claude configuration guide to cover Claude Desktop remote connectors, added screenshot-backed setup
+  steps, and renamed it to Claude Desktop / Cowork configuration and moved it to `docs/guides/configuration-claude-desktop-cowork.md`.
+
+### Attribution
+- Thanks to @gasteigerjo for PR #7.
+
 ## [0.11.0] - 2026-03-27
 
 ### Added

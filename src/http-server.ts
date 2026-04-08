@@ -1,9 +1,11 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { mcpAuthRouter } from '@modelcontextprotocol/sdk/server/auth/router.js';
 import express, { type Express, type Request, type Response } from 'express';
 import { randomUUID } from 'crypto';
 import { WebSocketServer } from './websocket-server.js';
 import { registerAllTools } from './tools/index.js';
+import { LocalhostOAuthProvider } from './oauth-provider.js';
 import type { Logger } from './logger.js';
 
 interface ServerInfo {
@@ -36,15 +38,29 @@ export class HttpMcpServer {
     this.logger = logger.child({ context: 'http-server' });
     this.serverInstanceId = randomUUID();
 
-    // Create Express app with JSON parsing
+    // Create Express app with JSON + form parsing
     this.app = express();
     this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: false }));
 
     // Route handlers
     this.setupRoutes();
   }
 
   private setupRoutes(): void {
+    // OAuth 2.1 endpoints for MCP client authentication.
+    // Auto-approves all clients; no user interaction required.
+    // Tokens are in-memory and reset on server restart (clients re-auth automatically).
+    //
+    // Use 'localhost' for OAuth URLs even when bound to 127.0.0.1 — OAuth treats them
+    // as different origins, and MCP clients are configured with 'localhost' URLs by default.
+    const oauthHost = this.host === '127.0.0.1' ? 'localhost' : this.host;
+    const issuerUrl = new URL(`http://${oauthHost}:${this.port}`);
+    const resourceServerUrl = new URL(`http://${oauthHost}:${this.port}/mcp`);
+    this.app.use(
+      mcpAuthRouter({ provider: new LocalhostOAuthProvider(), issuerUrl, resourceServerUrl })
+    );
+
     // POST: Handle session initialization and requests
     this.app.post('/mcp', async (req: Request, res: Response) => {
       try {

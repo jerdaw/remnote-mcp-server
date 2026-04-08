@@ -56,6 +56,20 @@ class MockMCPServer {
   }
 }
 
+type ToolSuccessResult = {
+  content: { type: string; text: string }[];
+  structuredContent?: Record<string, unknown>;
+  isError?: boolean;
+};
+
+function expectStructuredToolResult(result: ToolSuccessResult, expected: Record<string, unknown>) {
+  expect(result.isError).toBeUndefined();
+  expect(result.content).toHaveLength(1);
+  expect(result.content[0].type).toBe('text');
+  expect(JSON.parse(result.content[0].text)).toEqual(expected);
+  expect(result.structuredContent).toEqual(expected);
+}
+
 describe('Tool Definitions', () => {
   it('should have correct name for CREATE_NOTE_TOOL', () => {
     expect(CREATE_NOTE_TOOL.name).toBe('remnote_create_note');
@@ -284,13 +298,9 @@ describe('Tool Handlers - create_note', () => {
   it('should return formatted JSON result', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_create_note', arguments: validCreateNoteInput },
-    })) as { content: { type: string; text: string }[] };
+    })) as ToolSuccessResult;
 
-    expect(result.content).toHaveLength(1);
-    expect(result.content[0].type).toBe('text');
-
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed).toEqual(sampleNoteResult);
+    expectStructuredToolResult(result, sampleNoteResult);
   });
 
   it('should allow input without title', async () => {
@@ -331,10 +341,9 @@ describe('Tool Handlers - search', () => {
   it('should return formatted JSON result', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_search', arguments: validSearchInput },
-    })) as { content: { type: string; text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed).toEqual(sampleSearchResults);
+    expectStructuredToolResult(result, sampleSearchResults);
   });
 
   it('should apply default values from schema', async () => {
@@ -410,16 +419,36 @@ describe('Tool Handlers - search_by_tag', () => {
       maxContentLength: 3000,
     });
   });
+
+  it('should return structuredContent for tag search results', async () => {
+    const result = (await mockServer.callHandler(CallToolRequestSchema, {
+      params: { name: 'remnote_search_by_tag', arguments: validSearchByTagInput },
+    })) as ToolSuccessResult;
+
+    expectStructuredToolResult(result, sampleSearchResults);
+  });
 });
 
 describe('Tool Handlers - read_note', () => {
   let mockServer: MockMCPServer;
   let mockWsServer: { sendRequest: ReturnType<typeof vi.fn> };
+  const sampleReadNoteResult = {
+    remId: 'rem-id-123',
+    title: 'Root Note',
+    headline: 'Root Note',
+    remType: 'document',
+    content: '- Child note',
+    contentProperties: {
+      childrenRendered: 1,
+      childrenTotal: 1,
+      contentTruncated: false,
+    },
+  };
 
   beforeEach(() => {
     mockServer = new MockMCPServer();
     mockWsServer = {
-      sendRequest: vi.fn().mockResolvedValue(sampleNoteResult),
+      sendRequest: vi.fn().mockResolvedValue(sampleReadNoteResult),
     };
     registerAllTools(mockServer as never, mockWsServer as never, createMockLogger() as never);
   });
@@ -467,6 +496,16 @@ describe('Tool Handlers - read_note', () => {
       maxContentLength: 100000,
     });
   });
+
+  it('should return nested read_note content in structuredContent without colliding with MCP content', async () => {
+    const result = (await mockServer.callHandler(CallToolRequestSchema, {
+      params: { name: 'remnote_read_note', arguments: validReadNoteInput },
+    })) as ToolSuccessResult;
+
+    expectStructuredToolResult(result, sampleReadNoteResult);
+    expect(result.structuredContent?.content).toBe('- Child note');
+    expect(Array.isArray(result.content)).toBe(true);
+  });
 });
 
 describe('Tool Handlers - update_note', () => {
@@ -508,10 +547,9 @@ describe('Tool Handlers - update_note', () => {
   it('should return formatted JSON result with plural fields', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_update_note', arguments: validUpdateNoteInput },
-    })) as { content: { type: string; text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed).toEqual(sampleMutatingResult);
+    expectStructuredToolResult(result, sampleMutatingResult);
   });
 
   it('should reject update requests that include both appendContent and replaceContent', async () => {
@@ -570,10 +608,9 @@ describe('Tool Handlers - append_journal', () => {
   it('should return formatted JSON result with plural fields', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_append_journal', arguments: validAppendJournalInput },
-    })) as { content: { type: string; text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed).toEqual(sampleMutatingResult);
+    expectStructuredToolResult(result, sampleMutatingResult);
   });
 });
 
@@ -616,10 +653,9 @@ describe('Tool Handlers - read_table', () => {
   it('should return formatted JSON result', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_read_table', arguments: validReadTableInput },
-    })) as { content: { type: string; text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed).toEqual(sampleTableResult);
+    expectStructuredToolResult(result, sampleTableResult);
   });
 
   it('should pass through propertyFilter', async () => {
@@ -680,33 +716,33 @@ describe('Tool Handlers - status', () => {
 
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.connected).toBe(false);
-    expect(parsed.serverVersion).toBe('0.5.1');
-    expect(parsed.message).toContain('not connected');
+    expectStructuredToolResult(result, {
+      connected: false,
+      serverVersion: '0.5.1',
+      message: 'RemNote plugin not connected',
+    });
   });
 
   it('should include connected: true in response when connected', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.connected).toBe(true);
+    expect(result.structuredContent?.connected).toBe(true);
   });
 
   it('should merge status result with connected: true', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.connected).toBe(true);
-    expect(parsed.serverVersion).toBe('0.5.1');
-    expect(parsed.version).toBe('1.0.0');
-    expect(parsed.statistics).toBeDefined();
+    expectStructuredToolResult(result, {
+      connected: true,
+      serverVersion: '0.5.1',
+      ...sampleStatusResult,
+    });
   });
 
   it('should include version_warning when bridge version mismatches', async () => {
@@ -714,19 +750,17 @@ describe('Tool Handlers - status', () => {
 
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.version_warning).toContain('Version mismatch');
+    expect(result.structuredContent?.version_warning).toContain('Version mismatch');
   });
 
   it('should not include version_warning when versions are compatible', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.version_warning).toBeUndefined();
+    expect(result.structuredContent?.version_warning).toBeUndefined();
   });
 
   it('should not include version_warning when bridge version is null', async () => {
@@ -734,10 +768,9 @@ describe('Tool Handlers - status', () => {
 
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.version_warning).toBeUndefined();
+    expect(result.structuredContent?.version_warning).toBeUndefined();
   });
 
   it('should include version_warning when bridge version is null but pluginVersion in result mismatches', async () => {
@@ -747,10 +780,9 @@ describe('Tool Handlers - status', () => {
 
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_status', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.version_warning).toContain('Version mismatch');
+    expect(result.structuredContent?.version_warning).toContain('Version mismatch');
   });
 });
 
@@ -777,26 +809,32 @@ describe('Tool Handlers - get_playbook', () => {
   it('should return playbook with decisionTree and navigation presets', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_get_playbook', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.playbookVersion).toBe('1.0.0');
-    expect(Array.isArray(parsed.decisionTree)).toBe(true);
-    expect(parsed.decisionTree.length).toBeGreaterThan(0);
-    expect(parsed.navigationPresets.orientation.includeContent).toBe('structured');
-    expect(parsed.navigationPresets.orientation.depth).toBe(1);
-    expect(parsed.navigationPresets.orientation.childLimit).toBe(500);
-    expect(parsed.contentModes.structured).toContain('contentStructured');
+    expect(result.structuredContent?.playbookVersion).toBe('1.0.0');
+    expect(Array.isArray(result.structuredContent?.decisionTree)).toBe(true);
+    expect((result.structuredContent?.decisionTree as unknown[])?.length).toBeGreaterThan(0);
+    expect(result.structuredContent?.navigationPresets).toMatchObject({
+      orientation: {
+        includeContent: 'structured',
+        depth: 1,
+        childLimit: 500,
+      },
+    });
+    expect(result.structuredContent?.contentModes).toMatchObject({
+      structured: expect.stringContaining('contentStructured'),
+    });
   });
 
   it('should include currentStatus snapshot', async () => {
     const result = (await mockServer.callHandler(CallToolRequestSchema, {
       params: { name: 'remnote_get_playbook', arguments: {} },
-    })) as { content: { text: string }[] };
+    })) as ToolSuccessResult;
 
-    const parsed = JSON.parse(result.content[0].text);
-    expect(parsed.currentStatus.connected).toBe(true);
-    expect(parsed.currentStatus.serverVersion).toBe('0.8.0');
+    expect(result.structuredContent?.currentStatus).toMatchObject({
+      connected: true,
+      serverVersion: '0.8.0',
+    });
   });
 });
 
@@ -830,6 +868,21 @@ describe('Tool Handler - Error Handling', () => {
 
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('WebSocket error');
+  });
+
+  it('should not require structuredContent for tool errors', async () => {
+    mockWsServer.sendRequest.mockRejectedValue(new Error('WebSocket error'));
+
+    const result = (await mockServer.callHandler(CallToolRequestSchema, {
+      params: { name: 'remnote_search', arguments: { query: 'test' } },
+    })) as {
+      isError: boolean;
+      content: { text: string }[];
+      structuredContent?: Record<string, unknown>;
+    };
+
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent).toBeUndefined();
   });
 
   it('should format non-Error exceptions', async () => {
