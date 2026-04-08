@@ -21,6 +21,7 @@ import { readUpdateWorkflow } from './workflows/03-read-update.js';
 import { journalWorkflow } from './workflows/04-journal.js';
 import { errorCasesWorkflow } from './workflows/05-error-cases.js';
 import { readTableWorkflow } from './workflows/06-read-table.js';
+import { oauthWorkflow } from './workflows/07-oauth.js';
 import type { WorkflowResult, WorkflowFn, SharedState } from './types.js';
 
 const RESET = '\x1b[0m';
@@ -296,6 +297,7 @@ async function main(): Promise<void> {
   // Define workflow sequence
   const workflows: Array<{ name: string; fn: WorkflowFn }> = [
     { name: 'Status Check', fn: statusWorkflow },
+    { name: 'OAuth HTTP Surface', fn: oauthWorkflow },
     { name: 'Create & Search', fn: createSearchWorkflow },
     { name: 'Read & Update', fn: readUpdateWorkflow },
     { name: 'Journal', fn: journalWorkflow },
@@ -343,7 +345,7 @@ async function main(): Promise<void> {
         break;
       }
 
-      const result = await workflow.fn({ client, runId }, state);
+      const result = await workflow.fn({ client, runId, serverBaseUrl: baseUrl }, state);
       results.push(result);
       printWorkflowResult(i, result);
     }

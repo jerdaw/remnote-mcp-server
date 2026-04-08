@@ -23,6 +23,7 @@ export interface WorkflowResult {
 export interface WorkflowContext {
   client: McpTestClient;
   runId: string;
+  serverBaseUrl: string;
 }
 
 /** Shared state passed between workflows for cross-workflow dependencies. */
