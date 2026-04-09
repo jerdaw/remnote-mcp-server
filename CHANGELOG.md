@@ -21,6 +21,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 - Returned `structuredContent` for tools with `outputSchema`, so strict MCP clients accept successful tool results.
+  Thanks to @gasteigerjo for PR #7, which added this support.
 
 ## [0.11.0] - 2026-03-27
 
