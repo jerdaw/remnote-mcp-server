@@ -116,6 +116,12 @@ export const SEARCH_TOOL = {
               items: { type: 'string' },
               description: 'Alternate names for the Rem (omitted if none)',
             },
+            tags: {
+              type: 'array',
+              items: { type: 'string' },
+              description:
+                'Direct tag names applied to the returned Rem (omitted if none or unavailable from the bridge runtime)',
+            },
             remType: {
               type: 'string',
               description:
@@ -148,6 +154,12 @@ export const SEARCH_TOOL = {
                     type: 'array',
                     items: { type: 'string' },
                     description: 'Alternate names for the child Rem (omitted if none)',
+                  },
+                  tags: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description:
+                      'Direct tag names applied to the child Rem (omitted if none or unavailable from the bridge runtime)',
                   },
                   remType: {
                     type: 'string',
@@ -282,6 +294,12 @@ export const READ_NOTE_TOOL = {
         items: { type: 'string' },
         description: 'Alternate names for the Rem (omitted if none)',
       },
+      tags: {
+        type: 'array',
+        items: { type: 'string' },
+        description:
+          'Direct tag names applied to the returned Rem (omitted if none or unavailable from the bridge runtime)',
+      },
       remType: {
         type: 'string',
         description:
@@ -314,6 +332,12 @@ export const READ_NOTE_TOOL = {
               type: 'array',
               items: { type: 'string' },
               description: 'Alternate names for the child Rem (omitted if none)',
+            },
+            tags: {
+              type: 'array',
+              items: { type: 'string' },
+              description:
+                'Direct tag names applied to the child Rem (omitted if none or unavailable from the bridge runtime)',
             },
             remType: {
               type: 'string',

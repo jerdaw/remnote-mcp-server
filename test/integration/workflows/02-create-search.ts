@@ -343,6 +343,9 @@ export async function createSearchWorkflow(
       const match = findMatchingSearchResult(results, state.noteBId as string);
       assertSearchContentModeShape(match, mode);
       assertParentContext(match, state, `search ${mode} parent context`);
+      // Live RemNote currently lacks reliable reverse note -> tags lookup for plain search/read.
+      // Keep write + search_by_tag coverage, but do not fail the live suite on omitted search tags:
+      // https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md
       steps.push({
         label,
         passed: true,

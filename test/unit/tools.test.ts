@@ -137,6 +137,26 @@ describe('Tool Definitions', () => {
     expect(readProps.parentTitle).toBeDefined();
   });
 
+  it('should advertise tag fields in search/read output schemas', () => {
+    const searchResultProps = ((
+      SEARCH_TOOL.outputSchema.properties.results as {
+        items?: { properties?: Record<string, unknown> };
+      }
+    ).items?.properties ?? {}) as Record<string, unknown>;
+    const searchChildProps = ((
+      searchResultProps.contentStructured as { items?: { properties?: Record<string, unknown> } }
+    )?.items?.properties ?? {}) as Record<string, unknown>;
+    const readProps = (READ_NOTE_TOOL.outputSchema.properties ?? {}) as Record<string, unknown>;
+    const readChildProps = ((
+      readProps.contentStructured as { items?: { properties?: Record<string, unknown> } }
+    )?.items?.properties ?? {}) as Record<string, unknown>;
+
+    expect(searchResultProps.tags).toBeDefined();
+    expect(searchChildProps.tags).toBeDefined();
+    expect(readProps.tags).toBeDefined();
+    expect(readChildProps.tags).toBeDefined();
+  });
+
   it('should have correct name for READ_NOTE_TOOL', () => {
     expect(READ_NOTE_TOOL.name).toBe('remnote_read_note');
   });
@@ -436,6 +456,7 @@ describe('Tool Handlers - read_note', () => {
     remId: 'rem-id-123',
     title: 'Root Note',
     headline: 'Root Note',
+    tags: ['project'],
     remType: 'document',
     content: '- Child note',
     contentProperties: {

@@ -116,6 +116,13 @@ Returns an array of remIds containing the title (if provided) and each generated
 
 Search your RemNote knowledge base with full-text search.
 
+Known limitation:
+
+- `tags` is still optional in the response schema, but live RemNote currently does not expose reliable reverse
+  note -> tags lookup for plain `search` / `read_note`.
+- See the bridge limitation note:
+  [tag-readback-limitations.md](https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md)
+
 ### Parameters
 
 | Parameter | Type | Required | Description |
@@ -155,6 +162,7 @@ Returns array of matching notes:
       "headline": "Machine Learning Basics",
       "parentRemId": "parent987",
       "parentTitle": "AI Notes",
+      "tags": ["ml", "reference"],
       "remType": "document"
     },
     {
@@ -177,6 +185,7 @@ Returns array of matching notes:
       "headline": "Machine Learning Basics",
       "parentRemId": "parent987",
       "parentTitle": "AI Notes",
+      "tags": ["ml", "reference"],
       "remType": "document",
       "content": "- Supervised learning\n- Unsupervised learning\n"
     }
@@ -193,6 +202,8 @@ Returns array of matching notes:
 - Use `includeContent: "structured"` when you need nested child `remId`s for follow-up reads/navigation
 - For whole-KB orientation, start with `includeContent: "structured"`, `depth: 1`, `childLimit: 500`
 - Use `parentRemId` and `parentTitle` to show where a result sits in your hierarchy.
+- Treat `tags` as best-effort metadata on `search` results until the live RemNote SDK exposes reliable note -> tags
+  lookup.
 
 ## remnote_search_by_tag
 
@@ -231,6 +242,13 @@ Search by tag "project-review" and include structured content
 
 Read a specific note by its Rem ID, including child content.
 
+Known limitation:
+
+- `tags` remains optional in the response schema, but live RemNote currently does not expose reliable reverse
+  note -> tags lookup for `read_note`.
+- See the bridge limitation note:
+  [tag-readback-limitations.md](https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md)
+
 ### Parameters
 
 | Parameter | Type | Required | Description |
@@ -267,6 +285,7 @@ Returns note metadata plus optional rendered child content:
   "headline": "Project Overview",
   "parentRemId": "folder001",
   "parentTitle": "Work Projects",
+  "tags": ["work", "active"],
   "remType": "document",
   "content": "- Goals\n  - Improve performance\n- Timeline\n",
   "contentProperties": {
@@ -285,6 +304,8 @@ instead of markdown `content`.
 - Use `depth: 0` for just the note title (no children)
 - Use `includeContent: "none"` when you only need metadata and parent context.
 - Use `includeContent: "structured"` when you need nested child `remId`s for deterministic follow-up navigation.
+- Treat `tags` as best-effort metadata on `read_note` results until the live RemNote SDK exposes reliable
+  note -> tags lookup.
 - Start traversal with `includeContent: "structured"`, `depth: 1`, `childLimit: 500`, then deepen selected branches.
 - Use `depth: 1-3` for common hierarchies
 - Use `depth: 4-10` for deep nested structures

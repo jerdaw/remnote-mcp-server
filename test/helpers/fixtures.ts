@@ -107,8 +107,8 @@ export const sampleNoteResult = sampleMutatingResult;
 
 export const sampleSearchResults = {
   results: [
-    { id: 'rem-1', title: 'Result 1' },
-    { id: 'rem-2', title: 'Result 2' },
+    { remId: 'rem-1', title: 'Result 1', tags: ['work'] },
+    { remId: 'rem-2', title: 'Result 2' },
   ],
   count: 2,
 };

@@ -164,6 +164,9 @@ export async function readUpdateWorkflow(
         state.integrationParentTitle as string,
         'read rich note parentTitle should match integration parent'
       );
+      // Live RemNote currently lacks reliable reverse note -> tags lookup for plain search/read.
+      // Keep write + search_by_tag coverage, but do not fail the live suite on omitted read tags:
+      // https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md
       if (mode === 'markdown') {
         assertHasField(result, 'content', 'read rich note markdown');
         assertTruthy(typeof result.content === 'string', 'content should be a string');

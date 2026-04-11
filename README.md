@@ -141,9 +141,9 @@ Keep this terminal running.
 | Tool                      | Description                                    |
 |---------------------------|------------------------------------------------|
 | `remnote_create_note`     | Create notes, markdown trees, or flashcards with title, content, parent, and tags |
-| `remnote_search`          | Search knowledge base with full-text search    |
+| `remnote_search`          | Search knowledge base with full-text search and parent-context metadata; `tags` remain optional and SDK-limited |
 | `remnote_search_by_tag`   | Search by tag with ancestor-context resolution |
-| `remnote_read_note`       | Read note by ID in markdown or structured form |
+| `remnote_read_note`       | Read note by ID with metadata and markdown or structured content; readable `tags` remain SDK-limited |
 | `remnote_update_note`     | Update title, append/replace content, or modify tags |
 | `remnote_append_journal`  | Append hierarchical content to today's daily document |
 | `remnote_read_table`      | Read Advanced Table columns, rows, and typed property metadata |
