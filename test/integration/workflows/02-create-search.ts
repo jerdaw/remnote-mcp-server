@@ -48,6 +48,19 @@ function assertParentContext(
   );
 }
 
+function assertTagsInclude(
+  note: Record<string, unknown>,
+  expectedTag: string,
+  label: string
+): void {
+  assertHasField(note, 'tags', `${label}: tags`);
+  assertIsArray(note.tags, `${label}: tags`);
+  assertTruthy(
+    (note.tags as unknown[]).includes(expectedTag),
+    `${label}: tags should include ${expectedTag}`
+  );
+}
+
 function assertSearchContentModeShape(
   note: Record<string, unknown>,
   mode: 'markdown' | 'structured' | 'none'
@@ -343,9 +356,8 @@ export async function createSearchWorkflow(
       const match = findMatchingSearchResult(results, state.noteBId as string);
       assertSearchContentModeShape(match, mode);
       assertParentContext(match, state, `search ${mode} parent context`);
-      // Live RemNote currently lacks reliable reverse note -> tags lookup for plain search/read.
-      // Keep write + search_by_tag coverage, but do not fail the live suite on omitted search tags:
-      // https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md
+      assertTruthy(typeof state.searchByTagTag === 'string', 'search tag should be recorded');
+      assertTagsInclude(match, state.searchByTagTag as string, `search ${mode}`);
       steps.push({
         label,
         passed: true,

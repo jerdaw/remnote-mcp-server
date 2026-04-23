@@ -146,14 +146,11 @@ The integration tests are deliberately separate from the unit test suite. They r
 server + connected plugin), create real content, and take seconds rather than milliseconds. They run via `tsx` with
 custom lightweight assertions rather than Vitest to stay independent from the mocked unit-test environment.
 
-Known live limitation:
+Tag coverage:
 
-- The shared live suites intentionally do **not** assert `tags` on plain `remnote_search` or `remnote_read_note`
-  results right now.
-- Reason: the live RemNote SDK currently does not expose reliable reverse note -> tags lookup, even though write
-  operations and `remnote_search_by_tag` still work.
-- See the bridge limitation note:
-  [tag-readback-limitations.md](https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md)
+- The shared live suites assert `tags` on plain `remnote_search` and `remnote_read_note` for notes created with tags.
+- They also verify `remnote_update_note` tag add/remove flows through both `remnote_search_by_tag` and direct
+  `remnote_read_note` readback.
 
 ## Read Table Configuration
 

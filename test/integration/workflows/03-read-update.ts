@@ -83,6 +83,32 @@ export async function readUpdateWorkflow(
   const steps: StepResult[] = [];
   const tagVerificationName = `mcp-integration-verified-${ctx.runId.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
+  function assertTagsInclude(
+    note: Record<string, unknown>,
+    expectedTag: string,
+    label: string
+  ): void {
+    assertHasField(note, 'tags', `${label}: tags`);
+    assertIsArray(note.tags, `${label}: tags`);
+    assertTruthy(
+      (note.tags as unknown[]).includes(expectedTag),
+      `${label}: tags should include ${expectedTag}`
+    );
+  }
+
+  function assertTagsExclude(
+    note: Record<string, unknown>,
+    excludedTag: string,
+    label: string
+  ): void {
+    assertHasField(note, 'tags', `${label}: tags`);
+    assertIsArray(note.tags, `${label}: tags`);
+    assertTruthy(
+      !(note.tags as unknown[]).includes(excludedTag),
+      `${label}: tags should not include ${excludedTag}`
+    );
+  }
+
   if (
     !state.noteAId ||
     !state.noteBId ||
@@ -164,9 +190,11 @@ export async function readUpdateWorkflow(
         state.integrationParentTitle as string,
         'read rich note parentTitle should match integration parent'
       );
-      // Live RemNote currently lacks reliable reverse note -> tags lookup for plain search/read.
-      // Keep write + search_by_tag coverage, but do not fail the live suite on omitted read tags:
-      // https://github.com/robert7/remnote-mcp-bridge/blob/main/docs/tag-readback-limitations.md
+      assertTruthy(
+        typeof state.searchByTagTag === 'string',
+        'initial search tag should be recorded'
+      );
+      assertTagsInclude(result, state.searchByTagTag as string, `read ${mode}`);
       if (mode === 'markdown') {
         assertHasField(result, 'content', 'read rich note markdown');
         assertTruthy(typeof result.content === 'string', 'content should be a string');
@@ -371,6 +399,11 @@ export async function readUpdateWorkflow(
       assertIsArray(taggedSearch.results, 'search_by_tag after add tag results');
       const taggedResults = taggedSearch.results as Array<Record<string, unknown>>;
       findMatchingSearchResult(taggedResults, expectedTargetRemId);
+      const taggedRead = (await ctx.client.callTool('remnote_read_note', {
+        remId: state.noteAId,
+        includeContent: 'none',
+      })) as Record<string, unknown>;
+      assertTagsInclude(taggedRead, tagVerificationName, 'read after add tag');
       steps.push({ label: 'Add tag', passed: true, durationMs: Date.now() - start });
     } catch (e) {
       steps.push({
@@ -406,6 +439,11 @@ export async function readUpdateWorkflow(
       const taggedResults = taggedSearch.results as Array<Record<string, unknown>>;
       const match = taggedResults.find((r) => r.remId === expectedTargetRemId);
       assertTruthy(!match, 'removed tag should no longer resolve to the tagged target');
+      const taggedRead = (await ctx.client.callTool('remnote_read_note', {
+        remId: state.noteAId,
+        includeContent: 'none',
+      })) as Record<string, unknown>;
+      assertTagsExclude(taggedRead, tagVerificationName, 'read after remove tag');
       steps.push({ label: 'Remove tag', passed: true, durationMs: Date.now() - start });
     } catch (e) {
       steps.push({
